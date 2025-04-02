@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -73,14 +75,14 @@ fun PostsListScreen(viewModel: PostsViewModel,modifier: Modifier=Modifier){
                     columns = GridCells.Fixed(2),
                     modifier = modifier.fillMaxSize(),
                 ) {
-                    items(state.data) { item ->
-                        PostItem(item)
+                    itemsIndexed(state.data) { index,item ->
+                        PostItem(item,index, viewModel)
                     }
                 }
             } else {
                 LazyColumn(modifier = modifier) {
-                    items(state.data) { item ->
-                        PostItem(item)
+                    itemsIndexed(state.data) {index, item ->
+                        PostItem(item,index,viewModel)
                     }
                 }
             }
@@ -96,14 +98,16 @@ fun PostsListScreen(viewModel: PostsViewModel,modifier: Modifier=Modifier){
 }
 
 @Composable
-fun PostItem(comment: PostsItemModel) {
-    var imageUri by rememberSaveable  { mutableStateOf<Uri?>(null) }
+fun PostItem(comment: PostsItemModel,index:Int,viewModel: PostsViewModel) {
+    val imageUri by viewModel.selectedImages.collectAsState()
+    val selectedImageUri = imageUri[index]
+
 
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        imageUri = uri
+        viewModel.updateImageIcon(index, uri)
     }
 
     Card(
@@ -121,11 +125,7 @@ fun PostItem(comment: PostsItemModel) {
         ) {
 
             Image(
-                painter = if (imageUri != null) {
-                    rememberAsyncImagePainter(imageUri)
-                } else {
-                    painterResource(id = R.drawable.img)
-                },
+                painter = rememberAsyncImagePainter(model = selectedImageUri ?: R.drawable.img ),
                 contentDescription = "icon",
                 modifier = Modifier
                     .size(50.dp)

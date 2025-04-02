@@ -1,5 +1,6 @@
 package com.tc.lplcodingchallenge.presentation
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tc.lplcodingchallenge.data.model.PostsItemModel
@@ -17,6 +18,9 @@ class PostsViewModel @Inject constructor(private val getPostsUseCase: GetPostsUs
     private val _posts=MutableStateFlow<UiState<List<PostsItemModel>>>(UiState.LOADING)
     val posts:StateFlow<UiState<List<PostsItemModel>>> = _posts
 
+    private val _selectedImages = MutableStateFlow<Map<Int, Uri?>>(emptyMap())
+    val selectedImages:StateFlow<Map<Int,Uri?>> = _selectedImages
+
     init{
         getAllPosts()
     }
@@ -26,6 +30,12 @@ class PostsViewModel @Inject constructor(private val getPostsUseCase: GetPostsUs
             getPostsUseCase().collect{
                 _posts.value = it
             }
+        }
+    }
+
+    fun updateImageIcon(index: Int, uri: Uri?) {
+        _selectedImages.value = selectedImages.value.toMutableMap().apply {
+            put(index, uri)
         }
     }
 
