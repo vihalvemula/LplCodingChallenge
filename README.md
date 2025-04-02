@@ -6,7 +6,7 @@ It fetches comments from a Api and displays them in a simple UI.
 The app works in both portrait and landscape modes.
 
 Features:
-Fetches JSON data from JSONPlaceholder API using Retrofit.
+Fetches Api Response using Retrofit.
 Displays comments using jetpack compose.
 Uses a placeholder icon for profile images with an option to update from the gallery.
 Ensures text is not truncated.
